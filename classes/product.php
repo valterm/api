@@ -141,5 +141,30 @@ function read(){
     }
 
   }
+
+  function search($keywords){
+    $query = "SELECT SELECT p.id, p.name, p.description, p.price, p.category_id, c.name as category_name, p.created FROM ". $this->table_name . "  p
+      LEFT JOIN categories c ON p.category_id=c.id
+      WHERE p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?
+      ORDER BY p.created";
+
+      //prep
+      $stmt = $this->conn->prepare($query);
+
+      //sanitize
+      $keywords=htmlspecialchars(strip_tags($keywords));
+      $keywords = "%{$keywords}%";
+
+      //bind
+      $stmt->bindParam(1, $keywords);
+      $stmt->bindParam(2, $keywords);
+      $stmt->bindParam(3, $keywords);
+
+      //exec
+      $stmt->execute();
+
+      return $stmt;     
+
+  }
 }
 ?>
